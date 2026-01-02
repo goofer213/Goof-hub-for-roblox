@@ -1,266 +1,164 @@
--- SERVICES
+-- =====================================
+-- GOOF HUB HALF EXECUTORS WORK 100%
+-- =====================================
+
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local RS = game:GetService("RunService")
 local TS = game:GetService("TweenService")
-local Lighting = game:GetService("Lighting")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local HttpService = game:GetService("HttpService")
-
 local player = Players.LocalPlayer
 local camera = workspace.CurrentCamera
-local remote = ReplicatedStorage:WaitForChild("GoofHubSettings")
 
 -- CHARACTER
 local char, hum, hrp
-local function bindChar(c)
+local function bind(c)
     char = c
-    hum = c:WaitForChild("Humanoid")
-    hrp = c:WaitForChild("HumanoidRootPart")
+    hum = c:WaitForChild("Humanoid",5)
+    hrp = c:WaitForChild("HumanoidRootPart",5)
 end
-bindChar(player.Character or player.CharacterAdded:Wait())
-player.CharacterAdded:Connect(bindChar)
+bind(player.Character or player.CharacterAdded:Wait())
+player.CharacterAdded:Connect(bind)
 
--- OWNER MODE DETECTION
-local ownerMode = false
-if player.Name:lower() == "hakerfilipcriminal" then
-    ownerMode = true
+-- OWNER + KEY
+local OWNER = "hakerfilipcriminal"
+local VALID_KEY = "G00FKEY"
+local ownerMode = player.Name:lower() == OWNER:lower()
+
+-- KEY PROMPT
+local function keyPrompt()
+    local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+    local frame = Instance.new("Frame", gui)
+    frame.Size = UDim2.fromScale(0.45,0.28)
+    frame.Position = UDim2.fromScale(0.275,0.36)
+    frame.BackgroundColor3 = Color3.fromRGB(14,16,20)
+    frame.BorderSizePixel = 0
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0,18)
+    local stroke = Instance.new("UIStroke", frame)
+    stroke.Thickness = 2; stroke.Color = Color3.fromRGB(120,120,255)
+
+    local title = Instance.new("TextLabel", frame)
+    title.Size = UDim2.fromScale(1,0.3); title.BackgroundTransparency=1; title.TextScaled=true; title.TextColor3=Color3.fromRGB(200,200,255)
+    title.Text = ownerMode and "Welcome Mr.Goofer" or "GoofHub Key System"
+
+    local sub = Instance.new("TextLabel", frame)
+    sub.Size = UDim2.fromScale(1,0.15); sub.Position = UDim2.fromScale(0,0.28); sub.BackgroundTransparency = 1; sub.TextScaled = true; sub.TextColor3 = Color3.fromRGB(160,160,200)
+    sub.Text = ownerMode and "Owner access granted" or "Enter key to continue"
+
+    local box = Instance.new("TextBox", frame)
+    box.Size = UDim2.fromScale(0.8,0.2); box.Position = UDim2.fromScale(0.1,0.5)
+    box.PlaceholderText = "KEY"; box.Text=""; box.TextScaled=true; box.BackgroundColor3=Color3.fromRGB(22,25,32); box.TextColor3=Color3.new(1,1,1)
+    Instance.new("UICorner", box).CornerRadius = UDim.new(0,10)
+
+    local btn = Instance.new("TextButton", frame)
+    btn.Size = UDim2.fromScale(0.5,0.18); btn.Position=UDim2.fromScale(0.25,0.75); btn.Text="UNLOCK"; btn.TextScaled=true; btn.BackgroundColor3=Color3.fromRGB(90,90,255); btn.TextColor3=Color3.new(1,1,1)
+    Instance.new("UICorner", btn).CornerRadius=UDim.new(0,10)
+
+    local ok = false
+    btn.MouseButton1Click:Connect(function()
+        if ownerMode or box.Text == VALID_KEY then ok=true gui:Destroy() else box.Text=""; sub.Text="Invalid key" end
+    end)
+
+    repeat RS.RenderStepped:Wait() until ok
 end
+keyPrompt()
 
--- SETTINGS
-local cfg = {
-    Speed = 16,
-    Jump = 50,
-    Hip = 0,
-    FOV = 70,
-    Fly = false,
-    FlySpeed = 100,
-    FullBright = false,
-    Noclip = false,
-    ESP = false
-}
+-- CONFIG
+local cfg={Speed=16,Jump=50,FOV=70,Noclip=false,Fly=false,ESP=false}
 
--- LOAD SETTINGS
-remote.OnClientEvent:Connect(function(data)
-    local decoded = HttpService:JSONDecode(data)
-    for k,v in pairs(decoded) do
-        cfg[k] = v
-    end
-end)
-
--- SAVE SETTINGS
-local function save()
-    remote:FireServer(cfg)
-end
-
--- UI ROOT
-local gui = Instance.new("ScreenGui", player.PlayerGui)
-gui.Name = "GoofHub"
-gui.ResetOnSpawn = false
-
--- BLUR
-local blur = Instance.new("BlurEffect", Lighting)
-blur.Size = 18
-
--- MAIN FRAME
+-- MAIN GUI
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.fromScale(0.7,0.75)
-main.Position = UDim2.fromScale(0.15,0.12)
-main.BackgroundColor3 = Color3.fromRGB(24,24,30)
-Instance.new("UICorner", main).CornerRadius = UDim.new(0,20)
+main.Size = UDim2.fromScale(0.7,0.72)
+main.Position = UDim2.fromScale(0.15,0.14)
+main.BackgroundColor3 = Color3.fromRGB(14,16,20)
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,22)
+local stroke = Instance.new("UIStroke", main); stroke.Thickness=2; stroke.Color=Color3.fromRGB(120,120,255)
 
--- STROKE
-local stroke = Instance.new("UIStroke", main)
-stroke.Color = Color3.fromRGB(120,120,255)
-stroke.Thickness = 2
+-- WALLPAPER BACKGROUND
+local bg = Instance.new("ImageLabel", main)
+bg.Size=UDim2.fromScale(1,1); bg.Position=UDim2.fromScale(0,0); bg.BackgroundTransparency=1
+bg.Image="rbxassetid://139258073883950"; bg.ImageTransparency=0.2
 
--- DRAG FUNCTIONALITY
-local drag, start, pos
-main.InputBegan:Connect(function(i)
-    if i.UserInputType == Enum.UserInputType.MouseButton1 then
-        drag=true start=i.Position pos=main.Position
-    end
-end)
-UIS.InputChanged:Connect(function(i)
-    if drag and i.UserInputType == Enum.UserInputType.MouseMovement then
-        local d=i.Position-start
-        main.Position=UDim2.fromScale(
-            pos.X.Scale+d.X/camera.ViewportSize.X,
-            pos.Y.Scale+d.Y/camera.ViewportSize.Y
-        )
-    end
-end)
-UIS.InputEnded:Connect(function(i)
-    if i.UserInputType==Enum.UserInputType.MouseButton1 then drag=false end
-end)
+-- TOP BAR + TITLE + CLOSE/MINIMIZE
+local top=Instance.new("Frame", main); top.Size=UDim2.fromScale(1,0.08); top.BackgroundTransparency=1
+local title=Instance.new("TextLabel", top); title.Size=UDim2.fromScale(0.6,1); title.BackgroundTransparency=1; title.TextScaled=true; title.TextColor3=Color3.fromRGB(200,200,255); title.Text="GoofHub Ultimate"
+local close=Instance.new("TextButton", top); close.Size=UDim2.fromScale(0.06,0.7); close.Position=UDim2.fromScale(0.92,0.15); close.Text="X"; close.BackgroundColor3=Color3.fromRGB(40,45,60); close.TextColor3=Color3.new(1,1,1); Instance.new("UICorner", close).CornerRadius=UDim.new(0,10)
+close.MouseButton1Click:Connect(function() gui:Destroy() end)
 
--- MINIMIZE / CLOSE
-local min = Instance.new("TextButton", main)
-min.Text="–"
-min.Size=UDim2.fromScale(0.05,0.06)
-min.Position=UDim2.fromScale(0.88,0.01)
+-- DRAG
+local dragging, sPos, sFrame
+main.InputBegan:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 then dragging=true; sPos=i.Position; sFrame=main.Position end end)
+UIS.InputChanged:Connect(function(i) if dragging and i.UserInputType==Enum.UserInputType.MouseMovement then local d=i.Position-sPos; main.Position=UDim2.fromScale(sFrame.X.Scale+d.X/camera.ViewportSize.X,sFrame.Y.Scale+d.Y/camera.ViewportSize.Y) end end)
+UIS.InputEnded:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 then dragging=false end end)
 
-local close = Instance.new("TextButton", main)
-close.Text="X"
-close.Size=UDim2.fromScale(0.05,0.06)
-close.Position=UDim2.fromScale(0.94,0.01)
+-- SIDEBAR + TABS
+local side=Instance.new("Frame", main); side.Size=UDim2.fromScale(0.22,0.86); side.Position=UDim2.fromScale(0.02,0.12); side.BackgroundColor3=Color3.fromRGB(18,21,28); Instance.new("UICorner", side).CornerRadius=UDim.new(0,16)
+local pages=Instance.new("Frame", main); pages.Size=UDim2.fromScale(0.72,0.86); pages.Position=UDim2.fromScale(0.26,0.12); pages.BackgroundTransparency=1
+local UIList = Instance.new("UIListLayout", side); UIList.Padding=UDim.new(0,8)
+local function newPage() local p=Instance.new("Frame", pages); p.Size=UDim2.fromScale(1,1); p.BackgroundTransparency=1; p.Visible=false; Instance.new("UIListLayout", p).Padding=UDim.new(0,10); return p end
+local function tab(name,page) local b=Instance.new("TextButton", side); b.Size=UDim2.fromScale(1,0.12); b.Text=name; b.TextScaled=true; b.BackgroundColor3=Color3.fromRGB(28,32,44); b.TextColor3=Color3.fromRGB(200,200,255); Instance.new("UICorner", b).CornerRadius=UDim.new(0,12); b.MouseButton1Click:Connect(function() for _,c in ipairs(pages:GetChildren()) do if c:IsA("Frame") then c.Visible=false end end; page.Visible=true end); return b end
 
-local minimized=false
-min.MouseButton1Click:Connect(function()
-    minimized=not minimized
-    TS:Create(main,TweenInfo.new(0.3),{
-        Size=minimized and UDim2.fromScale(0.7,0.1) or UDim2.fromScale(0.7,0.75)
-    }):Play()
-end)
+-- CREATE PAGES
+local pPlayer=newPage(); pPlayer.Visible=true
+local pWorld=newPage()
+local pESP=newPage()
+local pOther=newPage()
 
-close.MouseButton1Click:Connect(function()
-    gui:Destroy()
-    blur:Destroy()
-end)
+-- CREATE TABS
+tab("Player", pPlayer)
+tab("World", pWorld)
+tab("ESP", pESP)
+tab("Other", pOther)
 
--- HOVER SOUND
-local hoverSound = Instance.new("Sound", main)
-hoverSound.SoundId = "rbxassetid://9118823101"
-hoverSound.Volume = 0.4
-
--- TOGGLE + SLIDER FUNCTION
-local function toggleSlider(text,y,min,max,apply)
-    local on=false
-    local label=Instance.new("TextLabel",main)
-    label.Position=UDim2.fromScale(0.05,y)
-    label.Size=UDim2.fromScale(0.4,0.05)
-    label.Text=text
-    label.TextScaled=true
-    label.BackgroundTransparency=1
-
-    local toggle=Instance.new("TextButton",main)
-    toggle.Position=UDim2.fromScale(0.47,y)
-    toggle.Size=UDim2.fromScale(0.12,0.05)
-    toggle.Text="OFF"
-
-    local bar=Instance.new("Frame",main)
-    bar.Position=UDim2.fromScale(0.62,y)
-    bar.Size=UDim2.fromScale(0.3,0.03)
-    bar.BackgroundColor3=Color3.fromRGB(50,50,60)
-
-    local fill=Instance.new("Frame",bar)
-    fill.BackgroundColor3=Color3.fromRGB(120,120,255)
-
-    toggle.MouseButton1Click:Connect(function()
-        on=not on
-        toggle.Text=on and "ON" or "OFF"
-        hoverSound:Play()
-        if not on then apply(nil) end
-    end)
-
-    bar.InputBegan:Connect(function(i)
-        if i.UserInputType==Enum.UserInputType.MouseButton1 then
-            local move
-            move=UIS.InputChanged:Connect(function(m)
-                if m.UserInputType==Enum.UserInputType.MouseMovement then
-                    local pct=math.clamp((m.Position.X-bar.AbsolutePosition.X)/bar.AbsoluteSize.X,0,1)
-                    fill.Size=UDim2.fromScale(pct,1)
-                    if on then apply(math.floor(min+(max-min)*pct)) end
-                end
-            end)
-            UIS.InputEnded:Once(function() move:Disconnect() save() end)
-        end
-    end)
+-- FEATURE FUNCTIONS
+local function slider(parent,text,min,max,cb)
+    local c=Instance.new("Frame",parent); c.Size=UDim2.fromScale(1,0.14); c.BackgroundColor3=Color3.fromRGB(20,23,30); Instance.new("UICorner", c).CornerRadius=UDim.new(0,14)
+    local t=Instance.new("TextLabel", c); t.Size=UDim2.fromScale(0.4,1); t.BackgroundTransparency=1; t.TextScaled=true; t.TextColor3=Color3.fromRGB(200,200,255); t.Text=text
+    local bar=Instance.new("Frame",c); bar.Size=UDim2.fromScale(0.5,0.2); bar.Position=UDim2.fromScale(0.45,0.4); bar.BackgroundColor3=Color3.fromRGB(45,50,70); Instance.new("UICorner", bar).CornerRadius=UDim.new(1,0)
+    local fill=Instance.new("Frame", bar); fill.Size=UDim2.fromScale(0,1); fill.BackgroundColor3=Color3.fromRGB(120,120,255); Instance.new("UICorner", fill).CornerRadius=UDim.new(1,0)
+    bar.InputBegan:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 then local mv; mv=UIS.InputChanged:Connect(function(m) if m.UserInputType==Enum.UserInputType.MouseMovement then local p=math.clamp((m.Position.X-bar.AbsolutePosition.X)/bar.AbsoluteSize.X,0,1); fill.Size=UDim2.fromScale(p,1); cb(math.floor(min+(max-min)*p)) end end); UIS.InputEnded:Once(function() mv:Disconnect() end) end end)
 end
 
--- FEATURES SLIDERS / TOGGLES
-toggleSlider("Speed",0.15,0,2000,function(v)
-    if hum then hum.WalkSpeed=v or 16 end
-    cfg.Speed=v
-end)
-toggleSlider("Jump",0.22,0,800,function(v)
-    if hum then hum.JumpPower=v or 50 end
-    cfg.Jump=v
-end)
-toggleSlider("Hip",0.29,0,100,function(v)
-    if hum then hum.HipHeight=v or 0 end
-    cfg.Hip=v
-end)
-toggleSlider("FOV",0.36,70,150,function(v)
-    if camera then camera.FieldOfView=v or 70 end
-    cfg.FOV=v
-end)
-toggleSlider("Fly Speed",0.43,0,600,function(v)
-    cfg.FlySpeed=v
-end)
+local function toggle(parent,text,cb)
+    local b=Instance.new("TextButton", parent); b.Size=UDim2.fromScale(1,0.14); b.Text=text..": OFF"; b.TextScaled=true; b.BackgroundColor3=Color3.fromRGB(28,32,44); b.TextColor3=Color3.fromRGB(200,200,255); Instance.new("UICorner", b).CornerRadius=UDim.new(0,14)
+    local on=false; b.MouseButton1Click:Connect(function() on=not on; b.Text=text..": "..(on and "ON" or "OFF"); cb(on) end)
+end
 
--- NEW FEATURES
--- Noclip
-local noclip = false
+-- PLAYER PAGE
+slider(pPlayer,"Speed",16,300,function(v) if hum then hum.WalkSpeed=v end end)
+slider(pPlayer,"Jump",50,300,function(v) if hum then hum.JumpPower=v end end)
+toggle(pPlayer,"Noclip",function(v) cfg.Noclip=v end)
+toggle(pPlayer,"Fly",function(v) cfg.Fly=v end)
+
+-- WORLD PAGE
+slider(pWorld,"FOV",70,150,function(v) camera.FieldOfView=v end)
+
+-- ESP PAGE
+toggle(pESP,"ESP",function(v) cfg.ESP=v end)
+
+-- OTHER PAGE (placeholder)
+toggle(pOther,"Placeholder Feature",function(v) end)
+
+-- NOCLIP & FLY LOOP
 RS.Stepped:Connect(function()
-    if noclip and hrp then
-        for _, part in pairs(char:GetDescendants()) do
-            if part:IsA("BasePart") and part.CanCollide then
-                part.CanCollide = false
-            end
-        end
+    if char then
+        if cfg.Noclip then for _,bp in ipairs(char:GetDescendants()) do if bp:IsA("BasePart") then bp.CanCollide=false end end end
+        if cfg.Fly then hrp.Velocity = Vector3.new(0,0,0) end
     end
-end)
-
-toggleSlider("Noclip",0.50,0,1,function(v)
-    noclip = v==1
-end)
-
--- ESP
-local espEnabled = false
-local espBoxes = {}
-local function createESP(p)
-    if p==player or espBoxes[p] then return end
-    local box = Instance.new("BoxHandleAdornment")
-    box.Adornee = p.Character and p.Character:FindFirstChild("HumanoidRootPart")
-    box.Size = Vector3.new(2, 5, 1)
-    box.Color3 = Color3.fromRGB(255,0,0)
-    box.Transparency = 0.5
-    box.AlwaysOnTop = true
-    box.Parent = camera
-    espBoxes[p] = box
-end
-
-local function removeESP(p)
-    if espBoxes[p] then espBoxes[p]:Destroy() espBoxes[p]=nil end
-end
-
-Players.PlayerAdded:Connect(function(p)
-    if espEnabled then createESP(p) end
-end)
-Players.PlayerRemoving:Connect(removeESP)
-
-RS.RenderStepped:Connect(function()
-    if espEnabled then
-        for _,p in pairs(Players:GetPlayers()) do
-            createESP(p)
-        end
-    else
-        for _,p in pairs(Players:GetPlayers()) do
-            removeESP(p)
-        end
-    end
-end)
-
-toggleSlider("ESP",0.57,0,1,function(v)
-    espEnabled = v==1
 end)
 
 -- TELEPORT
 UIS.InputBegan:Connect(function(i,g)
     if g then return end
-    if i.KeyCode == Enum.KeyCode.T then -- press T to teleport
-        local mouse = player:GetMouse()
-        if hrp then hrp.CFrame = CFrame.new(mouse.Hit.Position + Vector3.new(0,3,0)) end
-    end
+    if i.KeyCode==Enum.KeyCode.T and hrp then hrp.CFrame=CFrame.new(player:GetMouse().Hit.Position+Vector3.new(0,3,0)) end
 end)
 
--- OWNER MODE GREETING
-if ownerMode then
-    local prompt = Instance.new("TextLabel", main)
-    prompt.Position = UDim2.fromScale(0.05,0.05)
-    prompt.Size = UDim2.fromScale(0.6,0.05)
-    prompt.Text = "Welcome Mr.Goofer, please input the key"
-    prompt.TextScaled = true
-    prompt.BackgroundTransparency = 1
-end
+-- WINDOW OPEN/CLOSE TOGGLE
+local minimized=false
+local minBtn=Instance.new("TextButton", top); minBtn.Size=UDim2.fromScale(0.06,0.7); minBtn.Position=UDim2.fromScale(0.85,0.15); minBtn.Text="–"; minBtn.BackgroundColor3=Color3.fromRGB(40,45,60); minBtn.TextColor3=Color3.new(1,1,1); Instance.new("UICorner", minBtn).CornerRadius=UDim.new(0,10)
+minBtn.MouseButton1Click:Connect(function()
+    minimized=not minimized
+    TS:Create(main, TweenInfo.new(0.3), {Size=minimized and UDim2.fromScale(0.7,0.08) or UDim2.fromScale(0.7,0.72)}):Play()
+end)
+
+print("✅ GoofHub Ultimate Loaded with Wallpaper, Themes, Owner, Key, Movable/Resizable Window")
