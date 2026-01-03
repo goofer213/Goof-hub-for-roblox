@@ -7,16 +7,14 @@ local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local RS = game:GetService("RunService")
 local TS = game:GetService("TweenService")
-local TeleportService = game:GetService("TeleportService")
 
 -- PLAYER
 local player = Players.LocalPlayer
 local PlayerGui = player:WaitForChild("PlayerGui")
 
 -- CONFIG
-local PLACE_ID = 123974602339071
 local OWNER = "hakerfilipcriminal"
-local VALID_KEY = "G00FKEY"
+local VALID_KEY = "goofy321123" -- updated key
 
 local INFINITE_YIELD_URL = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"
 local BREAKIN2_URL = "https://raw.githubusercontent.com/EnesXVC/Breakin2/main/script"
@@ -75,15 +73,7 @@ end
 KeyPrompt()
 
 --====================================================
--- AUTO JOIN GAME
---====================================================
-if game.PlaceId ~= PLACE_ID then
-    TeleportService:Teleport(PLACE_ID, player)
-    return
-end
-
---====================================================
--- MAIN UI (NO CHAT CONTROL)
+-- MAIN UI (NO JOIN LOGIC)
 --====================================================
 local gui = Instance.new("ScreenGui", PlayerGui)
 gui.Name = "GoofHub"
