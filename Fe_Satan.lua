@@ -1,4 +1,3 @@
-
 --main fe satan script
 for _,v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
 	if v:IsA("SpecialMesh") or v:IsA("Mesh") then
@@ -3322,3 +3321,4 @@ end
 --//====================================================\\--
 --||			  		 END OF SCRIPT
 --\\====================================================//--
+
