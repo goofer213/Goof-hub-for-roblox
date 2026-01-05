@@ -1,212 +1,207 @@
--- =====================================
--- GOOFHUB ULTIMATE MEGA V4
--- Key: goofy321123
--- Commands: ?load iy, ?load bn2, ?load dmc
--- Toggle UI: G
--- Themes: Dark / Light / Wind
--- =====================================
+--=====================================
+--        GOOFHUB PRO
+--=====================================
 
 -- SERVICES
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local RS = game:GetService("RunService")
-local TS = game:GetService("TweenService")
 local Lighting = game:GetService("Lighting")
-local camera = workspace.CurrentCamera
 local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
 local PlayerGui = player:WaitForChild("PlayerGui")
 
 -- CHARACTER
 local char, hum, hrp
 local function bindChar(c)
     char = c
-    hum = c:WaitForChild("Humanoid",5)
-    hrp = c:WaitForChild("HumanoidRootPart",5)
+    hum = c:WaitForChild("Humanoid")
+    hrp = c:WaitForChild("HumanoidRootPart")
 end
 bindChar(player.Character or player.CharacterAdded:Wait())
 player.CharacterAdded:Connect(bindChar)
 
--- OWNER + KEY
-local OWNER = "hakerfilipcriminal"
-local VALID_KEY = "goofy321123"
-local ownerMode = player.Name:lower() == OWNER:lower()
-
--- SCRIPTS URL
-local INFINITE_YIELD_URL = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"
-local BREAKIN2_URL = "https://raw.githubusercontent.com/EnesXVC/Breakin2/main/script"
-local DARKMOON_URL = "https://rawscripts.net/raw/Universal-Script-DarkMoon-Client-46431"
-
 -- CONFIG
-local cfg={Speed=16,Jump=50,FOV=70,Noclip=false,Fly=false,ESP=false,Theme="Dark"}
+local cfg = {
+    Speed = 16,
+    Jump = 50,
+    HipHeight = 0,
+    Fly = false,
+    Noclip = false,
+    ESP = false,
+    FullBright = false
+}
 
--- BLUR
-local blur = Instance.new("BlurEffect", Lighting)
-blur.Size = 18
+-- SCRIPT URLS
+local SCRIPTS = {
+    IY = "https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source",
+    BN2 = "https://raw.githubusercontent.com/EnesXVC/Breakin2/main/script",
+    DMC = "https://rawscripts.net/raw/Universal-Script-DarkMoon-Client-46431",
+    ASH = "https://rawscripts.net/raw/99-Nights-in-the-Forest-asura-hub-79348",
+    UNIADM = "https://rawscripts.net/raw/Universal-Script-un*led-admin-82103",
+    ANTIKNOCK = "https://rawscripts.net/raw/Universal-Script-Anti-Knockback-script-81139",
+    UG2 = "https://rawscripts.net/raw/Universal-Script-unexpected-g2-80546"
+}
 
--- ==========================
--- KEY SYSTEM
--- ==========================
-local function keyPrompt()
-    local gui = Instance.new("ScreenGui", PlayerGui)
-    local frame = Instance.new("Frame", gui)
-    frame.Size = UDim2.fromScale(0.45,0.28)
-    frame.Position = UDim2.fromScale(0.275,0.36)
-    frame.BackgroundColor3 = Color3.fromRGB(14,16,20)
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0,20)
-    local stroke = Instance.new("UIStroke", frame)
-    stroke.Thickness = 2; stroke.Color = Color3.fromRGB(120,120,255)
-
-    local title = Instance.new("TextLabel", frame)
-    title.Size = UDim2.fromScale(1,0.3); title.BackgroundTransparency=1; title.TextScaled=true; title.TextColor3=Color3.fromRGB(200,200,255)
-    title.Text = ownerMode and "Welcome Mr.Goofer" or "GoofHub Key System"
-
-    local sub = Instance.new("TextLabel", frame)
-    sub.Size = UDim2.fromScale(1,0.15); sub.Position=UDim2.fromScale(0,0.28); sub.BackgroundTransparency=1; sub.TextScaled=true; sub.TextColor3=Color3.fromRGB(160,160,200)
-    sub.Text = ownerMode and "Owner access granted" or "Enter key to continue"
-
-    local box = Instance.new("TextBox", frame)
-    box.Size = UDim2.fromScale(0.8,0.2); box.Position=UDim2.fromScale(0.1,0.5)
-    box.PlaceholderText="KEY"; box.Text=""; box.TextScaled=true; box.BackgroundColor3=Color3.fromRGB(22,25,32); box.TextColor3=Color3.new(1,1,1)
-    Instance.new("UICorner", box).CornerRadius = UDim.new(0,12)
-
-    local btn = Instance.new("TextButton", frame)
-    btn.Size = UDim2.fromScale(0.5,0.18); btn.Position=UDim2.fromScale(0.25,0.75); btn.Text="UNLOCK"; btn.TextScaled=true; btn.BackgroundColor3=Color3.fromRGB(90,90,255); btn.TextColor3=Color3.new(1,1,1)
-    Instance.new("UICorner", btn).CornerRadius=UDim.new(0,12)
-
-    local ok=false
-    btn.MouseButton1Click:Connect(function()
-        if ownerMode or box.Text==VALID_KEY then ok=true gui:Destroy() else box.Text=""; sub.Text="Invalid key" end
-    end)
-    repeat RS.RenderStepped:Wait() until ok
+-- LOAD SCRIPT
+local function LoadScript(key)
+    local url = SCRIPTS[key]
+    if url then
+        pcall(function()
+            loadstring(game:HttpGet(url,true))()
+        end)
+    end
 end
-keyPrompt()
 
--- ==========================
--- MAIN UI
--- ==========================
-local gui = Instance.new("ScreenGui", PlayerGui)
-gui.Name = "GoofHubUltimateMegaV4"
-
-local main = Instance.new("Frame", gui)
-main.Size = UDim2.fromScale(0.7,0.75)
-main.Position = UDim2.fromScale(0.15,0.12)
-main.BackgroundColor3 = Color3.fromRGB(20,20,28)
-Instance.new("UICorner", main).CornerRadius=UDim.new(0,28)
-local stroke = Instance.new("UIStroke", main); stroke.Thickness=2; stroke.Color=Color3.fromRGB(120,120,255)
-
--- COOL WALLPAPER
-local bg = Instance.new("ImageLabel", main)
-bg.Size=UDim2.fromScale(1,1)
-bg.Position=UDim2.fromScale(0,0)
-bg.BackgroundTransparency=1
-bg.Image="rbxassetid://139258073883950"
-bg.ImageTransparency=0.15
-
--- TOP BAR + TITLE + CLOSE/MINIMIZE
-local top=Instance.new("Frame", main); top.Size=UDim2.fromScale(1,0.08); top.BackgroundTransparency=1
-local title=Instance.new("TextLabel", top); title.Size=UDim2.fromScale(0.6,1); title.BackgroundTransparency=1; title.TextScaled=true; title.TextColor3=Color3.fromRGB(220,220,255); title.Text="GoofHub Ultimate Mega V4"
-local close=Instance.new("TextButton", top); close.Size=UDim2.fromScale(0.06,0.7); close.Position=UDim2.fromScale(0.92,0.15); close.Text="X"; close.BackgroundColor3=Color3.fromRGB(45,50,70); close.TextColor3=Color3.new(1,1,1); Instance.new("UICorner", close).CornerRadius=UDim.new(0,12)
-close.MouseButton1Click:Connect(function() gui:Destroy(); blur:Destroy() end)
-
-local minBtn=Instance.new("TextButton", top); minBtn.Size=UDim2.fromScale(0.06,0.7); minBtn.Position=UDim2.fromScale(0.85,0.15); minBtn.Text="–"; minBtn.BackgroundColor3=Color3.fromRGB(45,50,70); minBtn.TextColor3=Color3.new(1,1,1); Instance.new("UICorner", minBtn).CornerRadius=UDim.new(0,12)
-local minimized=false
-minBtn.MouseButton1Click:Connect(function()
-    minimized=not minimized
-    TS:Create(main,TweenInfo.new(0.3),{Size=minimized and UDim2.fromScale(0.7,0.08) or UDim2.fromScale(0.7,0.75)}):Play()
+-- APPLY STATS
+RS.RenderStepped:Connect(function()
+    if hum then
+        hum.WalkSpeed = cfg.Speed
+        hum.JumpPower = cfg.Jump
+        hum.HipHeight = cfg.HipHeight
+    end
 end)
 
--- DRAG
-local dragging, sPos, sFrame
-main.InputBegan:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 then dragging=true; sPos=i.Position; sFrame=main.Position end end)
-UIS.InputChanged:Connect(function(i) if dragging and i.UserInputType==Enum.UserInputType.MouseMovement then local d=i.Position-sPos; main.Position=UDim2.fromScale(sFrame.X.Scale+d.X/camera.ViewportSize.X,sFrame.Y.Scale+d.Y/camera.ViewportSize.Y) end end)
-UIS.InputEnded:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 then dragging=false end end)
-
--- ==========================
--- SIDEBAR + TABS
--- ==========================
-local side=Instance.new("Frame", main); side.Size=UDim2.fromScale(0.22,0.86); side.Position=UDim2.fromScale(0.02,0.12); side.BackgroundColor3=Color3.fromRGB(30,32,40); Instance.new("UICorner", side).CornerRadius=UDim.new(0,18)
-local pages=Instance.new("Frame", main); pages.Size=UDim2.fromScale(0.72,0.86); pages.Position=UDim2.fromScale(0.26,0.12); pages.BackgroundTransparency=1
-local UIList = Instance.new("UIListLayout", side); UIList.Padding=UDim.new(0,10)
-local function newPage() local p=Instance.new("Frame", pages); p.Size=UDim2.fromScale(1,1); p.BackgroundTransparency=1; p.Visible=false; Instance.new("UIListLayout", p).Padding=UDim.new(0,10); return p end
-local function tab(name,page) local b=Instance.new("TextButton", side); b.Size=UDim2.fromScale(1,0.12); b.Text=name; b.TextScaled=true; b.BackgroundColor3=Color3.fromRGB(40,42,55); b.TextColor3=Color3.fromRGB(220,220,255); Instance.new("UICorner", b).CornerRadius=UDim.new(0,14); b.MouseButton1Click:Connect(function() for _,c in ipairs(pages:GetChildren()) do if c:IsA("Frame") then c.Visible=false end end; page.Visible=true end); return b end
-
--- CREATE PAGES
-local pPlayer=newPage(); pPlayer.Visible=true
-local pWorld=newPage()
-local pESP=newPage()
-local pOther=newPage()
-local pScripts=newPage()
-tab("Player",pPlayer)
-tab("World",pWorld)
-tab("ESP",pESP)
-tab("Other",pOther)
-tab("Scripts",pScripts)
-
--- SCRIPTS PAGE COMMANDS
-local function addScriptButton(parent,name,func)
-    local b=Instance.new("TextButton", parent)
-    b.Size=UDim2.fromScale(1,0.12); b.Text=name; b.TextScaled=true
-    b.BackgroundColor3=Color3.fromRGB(50,55,75); b.TextColor3=Color3.fromRGB(220,220,255)
-    Instance.new("UICorner", b).CornerRadius=UDim.new(0,12)
-    b.MouseButton1Click:Connect(func)
-end
-addScriptButton(pScripts,"Load Infinite Yield",function() loadstring(game:HttpGet(INFINITE_YIELD_URL,true))() end)
-addScriptButton(pScripts,"Load BreakIn2",function() loadstring(game:HttpGet(BREAKIN2_URL,true))() end)
-addScriptButton(pScripts,"Load DarkMoon",function() loadstring(game:HttpGet(DARKMOON_URL,true))() end)
-
--- ==========================
--- PLAYER PAGE
--- ==========================
-local function slider(parent,text,min,max,cb)
-    local c=Instance.new("Frame",parent); c.Size=UDim2.fromScale(1,0.14); c.BackgroundColor3=Color3.fromRGB(35,38,50); Instance.new("UICorner", c).CornerRadius=UDim.new(0,16)
-    local t=Instance.new("TextLabel", c); t.Size=UDim2.fromScale(0.4,1); t.BackgroundTransparency=1; t.TextScaled=true; t.TextColor3=Color3.fromRGB(220,220,255); t.Text=text
-    local bar=Instance.new("Frame",c); bar.Size=UDim2.fromScale(0.5,0.25); bar.Position=UDim2.fromScale(0.45,0.35); bar.BackgroundColor3=Color3.fromRGB(50,55,70); Instance.new("UICorner", bar).CornerRadius=UDim.new(1,0)
-    local fill=Instance.new("Frame", bar); fill.Size=UDim2.fromScale(0,1); fill.BackgroundColor3=Color3.fromRGB(120,120,255); Instance.new("UICorner", fill).CornerRadius=UDim.new(1,0)
-    bar.InputBegan:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 then local mv; mv=UIS.InputChanged:Connect(function(m) if m.UserInputType==Enum.UserInputType.MouseMovement then local p=math.clamp((m.Position.X-bar.AbsolutePosition.X)/bar.AbsoluteSize.X,0,1); fill.Size=UDim2.fromScale(p,1); cb(math.floor(min+(max-min)*p)) end end); UIS.InputEnded:Once(function() mv:Disconnect() end) end end)
-end
-local function toggle(parent,text,cb)
-    local b=Instance.new("TextButton", parent); b.Size=UDim2.fromScale(1,0.14); b.Text=text..": OFF"; b.TextScaled=true; b.BackgroundColor3=Color3.fromRGB(40,42,55); b.TextColor3=Color3.fromRGB(220,220,255); Instance.new("UICorner", b).CornerRadius=UDim.new(0,16)
-    local on=false; b.MouseButton1Click:Connect(function() on=not on; b.Text=text..": "..(on and "ON" or "OFF"); cb(on) end)
+-- FULLBRIGHT
+local function ApplyFullBright(on)
+    if on then
+        Lighting.Brightness = 3
+        Lighting.ClockTime = 14
+        Lighting.FogEnd = 100000
+        Lighting.GlobalShadows = false
+    else
+        Lighting.Brightness = 1
+        Lighting.ClockTime = 12
+        Lighting.FogEnd = 1000
+        Lighting.GlobalShadows = true
+    end
 end
 
--- PLAYER PAGE SLIDERS
-slider(pPlayer,"Speed",16,300,function(v) if hum then hum.WalkSpeed=v end end)
-slider(pPlayer,"Jump",50,300,function(v) if hum then hum.JumpPower=v end end)
-toggle(pPlayer,"Noclip",function(v) cfg.Noclip=v end)
-toggle(pPlayer,"Fly",function(v) cfg.Fly=v end)
+-- ESP
+local ESPFolder = Instance.new("Folder", workspace)
+ESPFolder.Name = "GoofHubESP"
 
--- WORLD PAGE
-slider(pWorld,"FOV",70,150,function(v) camera.FieldOfView=v end)
+local function ClearESP()
+    ESPFolder:ClearAllChildren()
+end
 
--- NOCLIP & FLY LOOP
+local function CreateESP(plr)
+    if plr == player or not plr.Character then return end
+    local h = plr.Character:FindFirstChild("HumanoidRootPart")
+    if not h then return end
+
+    local box = Instance.new("BoxHandleAdornment")
+    box.Adornee = h
+    box.Size = Vector3.new(4,6,4)
+    box.Color3 = Color3.fromRGB(255,0,0)
+    box.AlwaysOnTop = true
+    box.Transparency = 0.5
+    box.ZIndex = 10
+    box.Parent = ESPFolder
+end
+
+RS.RenderStepped:Connect(function()
+    ClearESP()
+    if cfg.ESP then
+        for _,plr in pairs(Players:GetPlayers()) do
+            pcall(CreateESP, plr)
+        end
+    end
+    ApplyFullBright(cfg.FullBright)
+end)
+
+-- FLY / NOCLIP
 RS.Stepped:Connect(function()
     if char then
-        if cfg.Noclip then for _,bp in ipairs(char:GetDescendants()) do if bp:IsA("BasePart") then bp.CanCollide=false end end end
-        if cfg.Fly then
-            local vel=Vector3.new(0,0,0)
-            if UIS:IsKeyDown(Enum.KeyCode.W) then vel=vel+camera.CFrame.LookVector end
-            if UIS:IsKeyDown(Enum.KeyCode.S) then vel=vel-camera.CFrame.LookVector end
-            if UIS:IsKeyDown(Enum.KeyCode.A) then vel=vel-camera.CFrame.RightVector end
-            if UIS:IsKeyDown(Enum.KeyCode.D) then vel=vel+camera.CFrame.RightVector end
-            if UIS:IsKeyDown(Enum.KeyCode.Space) then vel=vel+Vector3.new(0,1,0) end
-            if UIS:IsKeyDown(Enum.KeyCode.LeftShift) then vel=vel+Vector3.new(0,-1,0) end
+        if cfg.Noclip then
+            for _,p in pairs(char:GetDescendants()) do
+                if p:IsA("BasePart") then p.CanCollide = false end
+            end
+        end
+        if cfg.Fly and hrp then
+            local vel = Vector3.zero
+            if UIS:IsKeyDown(Enum.KeyCode.W) then vel += camera.CFrame.LookVector end
+            if UIS:IsKeyDown(Enum.KeyCode.S) then vel -= camera.CFrame.LookVector end
+            if UIS:IsKeyDown(Enum.KeyCode.A) then vel -= camera.CFrame.RightVector end
+            if UIS:IsKeyDown(Enum.KeyCode.D) then vel += camera.CFrame.RightVector end
+            if UIS:IsKeyDown(Enum.KeyCode.Space) then vel += Vector3.new(0,1,0) end
+            if UIS:IsKeyDown(Enum.KeyCode.LeftShift) then vel -= Vector3.new(0,1,0) end
             hrp.Velocity = vel * cfg.Speed
         end
     end
 end)
 
--- TELEPORT
-UIS.InputBegan:Connect(function(i,g)
-    if g then return end
-    if i.KeyCode==Enum.KeyCode.T and hrp then hrp.CFrame=CFrame.new(player:GetMouse().Hit.Position+Vector3.new(0,3,0)) end
-end)
+-- GUI
+local gui = Instance.new("ScreenGui", PlayerGui)
+gui.Name = "GoofHubPro"
 
--- OPEN/CLOSE UI WITH G
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.fromScale(0.55,0.65)
+main.Position = UDim2.fromScale(0.22,0.18)
+main.BackgroundColor3 = Color3.fromRGB(20,22,30)
+Instance.new("UICorner", main).CornerRadius = UDim.new(0,20)
+
+-- TITLE
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.fromScale(1,0.1)
+title.BackgroundTransparency = 1
+title.Text = "GoofHub Pro"
+title.TextScaled = true
+title.TextColor3 = Color3.fromRGB(220,220,255)
+
+-- CONTENT
+local function button(parent,text,cb)
+    local b = Instance.new("TextButton", parent)
+    b.Size = UDim2.fromScale(0.9,0.08)
+    b.Position = UDim2.fromScale(0.05,0,0)
+    b.Text = text
+    b.TextScaled = true
+    b.BackgroundColor3 = Color3.fromRGB(40,45,65)
+    b.TextColor3 = Color3.new(1,1,1)
+    Instance.new("UICorner", b)
+    b.MouseButton1Click:Connect(cb)
+    return b
+end
+
+local y = 0.12
+local function add(btn)
+    btn.Position = UDim2.fromScale(0.05,y)
+    y += 0.09
+end
+
+add(button(main,"Speed +5",function() cfg.Speed += 5 end))
+add(button(main,"Jump +10",function() cfg.Jump += 10 end))
+add(button(main,"HipHeight +1",function() cfg.HipHeight += 1 end))
+add(button(main,"Toggle Fly",function() cfg.Fly = not cfg.Fly end))
+add(button(main,"Toggle Noclip",function() cfg.Noclip = not cfg.Noclip end))
+add(button(main,"Toggle ESP",function() cfg.ESP = not cfg.ESP end))
+add(button(main,"Toggle FullBright",function() cfg.FullBright = not cfg.FullBright end))
+add(button(main,"Load Infinite Yield",function() LoadScript("IY") end))
+add(button(main,"Load BreakIn2",function() LoadScript("BN2") end))
+add(button(main,"Load DarkMoon",function() LoadScript("DMC") end))
+add(button(main,"Load Asura Hub",function() LoadScript("ASH") end))
+add(button(main,"Load UniAdmin",function() LoadScript("UNIADM") end))
+add(button(main,"Load AntiKnock",function() LoadScript("ANTIKNOCK") end))
+add(button(main,"Load UG2",function() LoadScript("UG2") end))
+
+-- UI TOGGLE
 UIS.InputBegan:Connect(function(i,g)
     if g then return end
-    if i.KeyCode==Enum.KeyCode.G then
+    if i.KeyCode == Enum.KeyCode.G then
         main.Visible = not main.Visible
     end
 end)
 
-print("✅ GoofHub Ultimate Mega V4 Loaded! All scripts, Fly/Noclip fixed, G toggle, Wallpaper, Tabs, Mega UI")
+-- CHAT COMMANDS
+player.Chatted:Connect(function(msg)
+    msg = msg:lower()
+    if msg == "?fly" then cfg.Fly = true end
+    if msg == "?unfly" then cfg.Fly = false end
+    if msg == "?esp" then cfg.ESP = not cfg.ESP end
+    if msg == "?fullbright" then cfg.FullBright = not cfg.FullBright end
+    if msg:sub(1,5) == "?load" then
+        LoadScript(msg:sub(7):upper())
+    end
+end)
+
+print("✅ GoofHub Pro Loaded")
