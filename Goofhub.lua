@@ -357,4 +357,95 @@ UIS.InputBegan:Connect(function(i,g)
     end
 end)
 
+
+--// Services
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+
+--// URLs
+local SCRIPTS = {
+    ["FE Satan"] = "https://raw.githubusercontent.com/goofer213/Goof-hub-for-roblox/main/Fe_Satan.lua",
+    ["Goof Hub"] = "https://raw.githubusercontent.com/goofer213/Goof-hub-for-roblox/main/Goofhub.lua"
+}
+
+--// GUI Setup
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "GoofHubLoader"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = Player:WaitForChild("PlayerGui")
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.fromScale(0.3, 0.35)
+Frame.Position = UDim2.fromScale(0.35, 0.3)
+Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+Frame.BorderSizePixel = 0
+Frame.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner", Frame)
+UICorner.CornerRadius = UDim.new(0, 12)
+
+local UIListLayout = Instance.new("UIListLayout", Frame)
+UIListLayout.Padding = UDim.new(0, 10)
+UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+
+--// Title
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 50)
+Title.BackgroundTransparency = 1
+Title.Text = "Goof Hub Loader"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 22
+Title.Parent = Frame
+
+--// Button creator
+local function createButton(text, url)
+    local Button = Instance.new("TextButton")
+    Button.Size = UDim2.new(0.85, 0, 0, 45)
+    Button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.Font = Enum.Font.Gotham
+    Button.TextSize = 18
+    Button.Text = text
+    Button.Parent = Frame
+
+    Instance.new("UICorner", Button).CornerRadius = UDim.new(0, 8)
+
+    Button.MouseButton1Click:Connect(function()
+        Button.Text = "Loading..."
+        local success, err = pcall(function()
+            loadstring(game:HttpGet(url))()
+        end)
+
+        if success then
+            Button.Text = "Loaded!"
+        else
+            Button.Text = "Error (check console)"
+            warn("Goof Hub Loader Error:", err)
+        end
+    end)
+end
+
+--// Create buttons
+for name, url in pairs(SCRIPTS) do
+    createButton(name, url)
+end
+
+--// Close button
+local Close = Instance.new("TextButton")
+Close.Size = UDim2.new(0.85, 0, 0, 35)
+Close.BackgroundColor3 = Color3.fromRGB(120, 30, 30)
+Close.Text = "Close"
+Close.TextColor3 = Color3.new(1,1,1)
+Close.Font = Enum.Font.GothamBold
+Close.TextSize = 16
+Close.Parent = Frame
+
+Instance.new("UICorner", Close).CornerRadius = UDim.new(0, 8)
+
+Close.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
 print("✅ GoofHub Pro LOADED")
