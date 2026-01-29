@@ -4,6 +4,14 @@
 -- TOGGLE UI: G
 -- CHAT PREFIX: ?
 --====================================================
+-- LOADSTRING SAFETY FIX
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+repeat task.wait() until player and player:FindFirstChild("PlayerGui")
 
 ---------------- SERVICES ----------------
 local Players = game:GetService("Players")
