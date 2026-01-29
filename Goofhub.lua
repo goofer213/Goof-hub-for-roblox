@@ -5,19 +5,17 @@
 -- TOGGLE UI: G
 --====================================================
 
----------------- LOADSTRING SAFETY ----------------
-if not game:IsLoaded() then game.Loaded:Wait() end
+-- SERVICES
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local RS = game:GetService("RunService")
 local Lighting = game:GetService("Lighting")
-
-local player = Players.LocalPlayer
-repeat task.wait() until player and player:FindFirstChild("PlayerGui")
-local PlayerGui = player.PlayerGui
+local RunService = game:GetService("RunService")
 local camera = workspace.CurrentCamera
+local player = Players.LocalPlayer
+local PlayerGui = player:WaitForChild("PlayerGui")
 
----------------- CHARACTER ----------------
+-- CHARACTER
 local char, hum, hrp
 local function bindChar(c)
     char = c
@@ -27,41 +25,37 @@ end
 bindChar(player.Character or player.CharacterAdded:Wait())
 player.CharacterAdded:Connect(bindChar)
 
----------------- KEY SYSTEM ----------------
+-- KEY SYSTEM
 local VALID_KEY = "7622134"
 local unlocked = false
-
 local KeyGui = Instance.new("ScreenGui", PlayerGui)
 KeyGui.Name = "GoofHub_Key"
-KeyGui.ResetOnSpawn = false
-
 local KF = Instance.new("Frame", KeyGui)
 KF.Size = UDim2.fromScale(0.45,0.3)
 KF.Position = UDim2.fromScale(0.275,0.35)
 KF.BackgroundColor3 = Color3.fromRGB(20,20,30)
-KF.Active = true
-Instance.new("UICorner",KF).CornerRadius = UDim.new(0,20)
+Instance.new("UICorner", KF).CornerRadius = UDim.new(0,20)
 
-local KT = Instance.new("TextLabel",KF)
+local KT = Instance.new("TextLabel", KF)
 KT.Size = UDim2.fromScale(1,0.3)
 KT.BackgroundTransparency = 1
 KT.Text = "GoofHub Pro"
 KT.TextScaled = true
 KT.TextColor3 = Color3.fromRGB(220,220,255)
 
-local KB = Instance.new("TextBox",KF)
+local KB = Instance.new("TextBox", KF)
 KB.Size = UDim2.fromScale(0.8,0.25)
 KB.Position = UDim2.fromScale(0.1,0.45)
 KB.PlaceholderText = "Enter Key"
 KB.TextScaled = true
-Instance.new("UICorner",KB)
+Instance.new("UICorner", KB)
 
-local KBtn = Instance.new("TextButton",KF)
+local KBtn = Instance.new("TextButton", KF)
 KBtn.Size = UDim2.fromScale(0.4,0.18)
 KBtn.Position = UDim2.fromScale(0.3,0.75)
 KBtn.Text = "UNLOCK"
 KBtn.TextScaled = true
-Instance.new("UICorner",KBtn)
+Instance.new("UICorner", KBtn)
 
 KBtn.MouseButton1Click:Connect(function()
     if KB.Text == VALID_KEY then
@@ -73,26 +67,23 @@ KBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-repeat RS.RenderStepped:Wait() until unlocked
+repeat task.wait() until unlocked
 
----------------- MAIN GUI ----------------
+-- MAIN GUI
 local gui = Instance.new("ScreenGui", PlayerGui)
 gui.Name = "GoofHub"
-gui.ResetOnSpawn = false
-
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.fromScale(0.72,0.75)
 main.Position = UDim2.fromScale(0.14,0.12)
 main.BackgroundColor3 = Color3.fromRGB(18,18,26)
-main.Active = true
 Instance.new("UICorner",main).CornerRadius = UDim.new(0,26)
 
----------------- DRAG ----------------
+-- DRAG
 do
     local drag, sp, sf
     main.InputBegan:Connect(function(i)
         if i.UserInputType==Enum.UserInputType.MouseButton1 then
-            drag=true sp=i.Position sf=main.Position
+            drag=true; sp=i.Position; sf=main.Position
         end
     end)
     UIS.InputChanged:Connect(function(i)
@@ -109,28 +100,26 @@ do
     end)
 end
 
----------------- SIDEBAR ----------------
+-- SIDEBAR
 local side = Instance.new("Frame",main)
 side.Size = UDim2.fromScale(0.22,0.86)
 side.Position = UDim2.fromScale(0.02,0.12)
 side.BackgroundColor3 = Color3.fromRGB(28,30,40)
 Instance.new("UICorner",side)
 
----------------- PAGES ----------------
-local pages = {} -- table to hold pages
-
+-- PAGES SYSTEM
+local pages = {}
 local function newPage(name)
     local p = Instance.new("Frame", main)
     p.Size = UDim2.fromScale(0.72,0.86)
     p.Position = UDim2.fromScale(0.26,0.12)
     p.BackgroundTransparency = 1
     p.Visible = false
-    Instance.new("UIListLayout", p).Padding = UDim.new(0,10)
+    Instance.new("UIListLayout",p).Padding = UDim.new(0,10)
     pages[name] = p
     return p
 end
-
-local function tabButton(name, page)
+local function tabButton(name,page)
     local b = Instance.new("TextButton", side)
     b.Size = UDim2.fromScale(1,0.12)
     b.Text = name
@@ -139,14 +128,12 @@ local function tabButton(name, page)
     b.TextColor3 = Color3.fromRGB(220,220,255)
     Instance.new("UICorner", b)
     b.MouseButton1Click:Connect(function()
-        for _,v in pairs(pages) do
-            v.Visible = false
-        end
+        for _,v in pairs(pages) do v.Visible = false end
         page.Visible = true
     end)
 end
 
--- Create pages
+-- PAGES
 local pPlayer = newPage("Player")
 local pESP = newPage("ESP")
 local pScripts = newPage("Scripts")
@@ -154,14 +141,13 @@ local pUsers = newPage("Users")
 local pSettings = newPage("Settings")
 pPlayer.Visible = true
 
--- Tab buttons
 tabButton("Player", pPlayer)
 tabButton("ESP", pESP)
 tabButton("Scripts", pScripts)
 tabButton("Users", pUsers)
 tabButton("Settings", pSettings)
 
----------------- UI HELPERS ----------------
+-- UI HELPERS
 local function toggle(parent,text,cb)
     local b=Instance.new("TextButton",parent)
     b.Size=UDim2.fromScale(1,0.14)
@@ -175,7 +161,6 @@ local function toggle(parent,text,cb)
         cb(on)
     end)
 end
-
 local function slider(parent,text,min,max,cb)
     local f=Instance.new("Frame",parent)
     f.Size=UDim2.fromScale(1,0.14)
@@ -205,10 +190,10 @@ local function slider(parent,text,min,max,cb)
     end)
 end
 
----------------- PLAYER PAGE ----------------
-slider(pPlayer,"Speed",16,300,function(v) hum.WalkSpeed=v end)
-slider(pPlayer,"Jump Power",50,300,function(v) hum.JumpPower=v end)
-slider(pPlayer,"Hip Height",0,10,function(v) hum.HipHeight=v end)
+-- PLAYER PAGE
+slider(pPlayer,"Speed",16,300,function(v) if hum then hum.WalkSpeed=v end end)
+slider(pPlayer,"Jump Power",50,300,function(v) if hum then hum.JumpPower=v end end)
+slider(pPlayer,"Hip Height",0,10,function(v) if hum then hum.HipHeight=v end end)
 
 local flying=false
 toggle(pPlayer,"Fly",function(v) flying=v end)
@@ -222,13 +207,13 @@ toggle(pPlayer,"Noclip",function(v)
     end)
 end)
 
----------------- FULLBRIGHT ----------------
+-- FULLBRIGHT
 toggle(pSettings,"FullBright",function(v)
     Lighting.Brightness = v and 5 or 1
     Lighting.ClockTime = v and 14 or 12
 end)
 
----------------- ESP ----------------
+-- ESP
 toggle(pESP,"Player ESP",function(on)
     for _,plr in ipairs(Players:GetPlayers()) do
         if plr.Character and plr~=player then
@@ -244,7 +229,7 @@ toggle(pESP,"Player ESP",function(on)
     end
 end)
 
----------------- SCRIPTS ----------------
+-- SCRIPTS
 local SCRIPTS={
     iy="https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source",
     bn2="https://raw.githubusercontent.com/EnesXVC/Breakin2/main/script",
@@ -268,7 +253,7 @@ for k,_ in pairs(SCRIPTS) do
     b.MouseButton1Click:Connect(function() loadScript(k) end)
 end
 
----------------- USERS TAB ----------------
+-- USERS TAB
 for _,plr in ipairs(Players:GetPlayers()) do
     local b=Instance.new("TextButton",pUsers)
     b.Size=UDim2.fromScale(1,0.12)
@@ -276,13 +261,11 @@ for _,plr in ipairs(Players:GetPlayers()) do
     b.TextScaled=true
     Instance.new("UICorner",b)
     b.MouseButton1Click:Connect(function()
-        if setclipboard then
-            setclipboard(plr.Name.." "..plr.UserId)
-        end
+        if setclipboard then setclipboard(plr.Name.." "..plr.UserId) end
     end)
 end
 
----------------- CHAT COMMANDS ----------------
+-- CHAT COMMANDS
 player.Chatted:Connect(function(msg)
     msg=msg:lower()
     if msg=="?fly" then flying=true end
@@ -290,7 +273,7 @@ player.Chatted:Connect(function(msg)
     if msg:sub(1,5)=="?load" then loadScript(msg:sub(7)) end
 end)
 
----------------- FLY LOOP ----------------
+-- FLY LOOP
 RS.RenderStepped:Connect(function()
     if flying and hrp then
         local vel = Vector3.new(0,0,0)
@@ -300,11 +283,11 @@ RS.RenderStepped:Connect(function()
         if UIS:IsKeyDown(Enum.KeyCode.D) then vel=vel+camera.CFrame.RightVector end
         if UIS:IsKeyDown(Enum.KeyCode.Space) then vel=vel+Vector3.new(0,1,0) end
         if UIS:IsKeyDown(Enum.KeyCode.LeftShift) then vel=vel+Vector3.new(0,-1,0) end
-        hrp.Velocity = vel * hum.WalkSpeed
+        hrp.Velocity = vel * (hum and hum.WalkSpeed or 16)
     end
 end)
 
----------------- UI TOGGLE ----------------
+-- UI TOGGLE
 UIS.InputBegan:Connect(function(i,g)
     if not g and i.KeyCode==Enum.KeyCode.G then
         main.Visible=not main.Visible
