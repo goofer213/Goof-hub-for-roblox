@@ -31,7 +31,7 @@ local VALID_KEY = "7622134"
 local unlocked = false
 
 local KeyGui = Instance.new("ScreenGui", PlayerGui)
-KeyGui.Name = "GoofHubPro_Key"
+KeyGui.Name = "GoofHub Key"
 KeyGui.ResetOnSpawn = false
 
 local KF = Instance.new("Frame", KeyGui)
@@ -43,7 +43,7 @@ Instance.new("UICorner",KF).CornerRadius = UDim.new(0,20)
 local KT = Instance.new("TextLabel",KF)
 KT.Size = UDim2.fromScale(1,0.3)
 KT.BackgroundTransparency = 1
-KT.Text = "GoofHub Pro"
+KT.Text = "GoofHub"
 KT.TextScaled = true
 KT.TextColor3 = Color3.fromRGB(220,220,255)
 
