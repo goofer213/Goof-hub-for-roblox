@@ -1,0 +1,138 @@
+--// My Claude ai script foe
+--// SERVICES
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+--// GUI SETUP
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ScriptHub"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+local Main = Instance.new("Frame")
+Main.Name = "Main"
+Main.Size = UDim2.new(0, 800, 0, 500)
+Main.Position = UDim2.new(0.5, -400, 0.5, -250)
+Main.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+Main.BorderSizePixel = 0
+Main.Parent = ScreenGui
+
+--// SCROLLING CONTAINER
+local ScriptsContainer = Instance.new("ScrollingFrame")
+ScriptsContainer.Name = "ScriptsContainer"
+ScriptsContainer.Size = UDim2.new(1, -20, 1, -60)
+ScriptsContainer.Position = UDim2.new(0, 10, 0, 50)
+ScriptsContainer.BackgroundTransparency = 1
+ScriptsContainer.BorderSizePixel = 0
+ScriptsContainer.ScrollBarThickness = 4
+ScriptsContainer.ScrollBarImageColor3 = Color3.fromRGB(80, 80, 80)
+ScriptsContainer.CanvasSize = UDim2.new(0, 0, 0, 0) -- will be auto-updated
+ScriptsContainer.Parent = Main
+
+--// GRID LAYOUT
+local Grid = Instance.new("UIGridLayout")
+Grid.CellSize = UDim2.new(0, 220, 0, 120)
+Grid.CellPadding = UDim2.new(0, 12, 0, 12)
+Grid.SortOrder = Enum.SortOrder.LayoutOrder
+Grid.Parent = ScriptsContainer
+
+--// AUTO-RESIZE CANVAS
+local function updateCanvas()
+	ScriptsContainer.CanvasSize = UDim2.new(0, 0, 0, Grid.AbsoluteContentSize.Y + 20)
+end
+
+Grid:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvas)
+
+--// CARD CREATOR
+local function createCard(name, description)
+	local Card = Instance.new("Frame")
+	Card.Name = name
+	Card.Size = UDim2.new(0, 220, 0, 120)
+	Card.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+	Card.BorderSizePixel = 0
+	Card.Parent = ScriptsContainer
+
+	local Corner = Instance.new("UICorner")
+	Corner.CornerRadius = UDim.new(0, 6)
+	Corner.Parent = Card
+
+	local Title = Instance.new("TextLabel")
+	Title.Name = "Title"
+	Title.Text = name
+	Title.Size = UDim2.new(1, -10, 0, 24)
+	Title.Position = UDim2.new(0, 5, 0, 5)
+	Title.BackgroundTransparency = 1
+	Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Title.TextSize = 14
+	Title.Font = Enum.Font.GothamBold
+	Title.TextXAlignment = Enum.TextXAlignment.Left
+	Title.Parent = Card
+
+	local Desc = Instance.new("TextLabel")
+	Desc.Name = "Description"
+	Desc.Text = description or "No description provided."
+	Desc.Size = UDim2.new(1, -10, 0, 50)
+	Desc.Position = UDim2.new(0, 5, 0, 34)
+	Desc.BackgroundTransparency = 1
+	Desc.TextColor3 = Color3.fromRGB(150, 150, 150)
+	Desc.TextSize = 12
+	Desc.Font = Enum.Font.Gotham
+	Desc.TextWrapped = true
+	Desc.TextXAlignment = Enum.TextXAlignment.Left
+	Desc.TextYAlignment = Enum.TextYAlignment.Top
+	Desc.Parent = Card
+
+	local ExecBtn = Instance.new("TextButton")
+	ExecBtn.Name = "ExecuteButton"
+	ExecBtn.Text = "Execute"
+	ExecBtn.Size = UDim2.new(1, -10, 0, 24)
+	ExecBtn.Position = UDim2.new(0, 5, 1, -29)
+	ExecBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	ExecBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+	ExecBtn.TextSize = 12
+	ExecBtn.Font = Enum.Font.Gotham
+	ExecBtn.BorderSizePixel = 0
+	ExecBtn.Parent = Card
+
+	local BtnCorner = Instance.new("UICorner")
+	BtnCorner.CornerRadius = UDim.new(0, 4)
+	BtnCorner.Parent = ExecBtn
+
+	ExecBtn.MouseButton1Click:Connect(function()
+		print("[ScriptHub] Executing:", name)
+		-- loadstring(script_source)()
+	end)
+
+	return Card
+end
+
+--// POPULATE CARDS
+for i = 1, 20 do
+	createCard("Script " .. i, "Description for script number " .. i .. ". Click execute to run.")
+end
+
+--// DENSITY TOGGLE
+local compact = false
+
+local function setDescriptionsVisible(visible)
+	for _, card in ipairs(ScriptsContainer:GetChildren()) do
+		if card:IsA("Frame") then
+			local desc = card:FindFirstChild("Description")
+			if desc then
+				desc.Visible = visible
+			end
+		end
+	end
+end
+
+local function applyLayout()
+	local width = ScriptsContainer.AbsoluteSize.X
+
+	if compact then
+		Grid.CellPadding = UDim2.new(0, 5, 0, 5)
+		if width < 600 then
+			Grid.CellSize = UDim2.new(0, 110, 0, 70)
+		elseif width < 900 then
+			Grid.CellSize = UDim2.new(0, 130, 0, 80)
+		else
+			Grid.Ce
